@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div>
+    </div>
+    <div>
+    </div>
+    <script type="text/javascript">
+    function gettime() {
+      var show=document.getElementsByTagName("div");
+      var time=new Date();
+      var all={
+         y:time.getFullYear(),
+         month:time.getMonth()+1,
+         date:time.getDate(),
+         dCh:time.getDay(),
+         dEn:time.getDay(),
+         h:time.getHours(),
+         m:time.getMinutes(),
+         s:time.getSeconds(),
+      };
+      all=addZero(all);
+      all=changeDay(all);
+      showDate(show,all);
+      setTimeout("gettime()",500);
+    }
+
+    function addZero(all){
+      if(all.s<10){
+        all.s="0"+all.s;
+      }
+      if(all.m<10){
+        all.m="0"+all.m;
+      }
+      return all;
+    }
+
+    function changeDay(all){
+        var weekDayCh=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+        all.dCh=weekDayCh[all.dCh];
+        var weekDayEn=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        all.dEn=weekDayEn[all.dEn];
+      return all;
+    }
+
+    function showDate(show,all){
+      show[0].innerHTML=all.y+"年"+all.month+"月"+all.date+"日"+all.dCh+" "+all.h+":"+all.m+":"+all.s;
+      show[1].innerHTML=all.y+"-"+all.month+"-"+all.date+" "+all.dEn+" "+all.h+":"+all.m+":"+all.s;
+
+    }
+    gettime();
+
+    </script>
+  </body>
+</html>

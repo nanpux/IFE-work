@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="container">
+    <select id="year-select">
+
+  </select>
+
+  <select id="month-select">
+
+  </select>
+
+  <select id="day-select">
+
+  </select>
+
+  <select id="hour-select">
+
+  </select>
+
+  <select id="minute-select">
+
+  </select>
+
+  <select id="second-select">
+
+  </select>
+  </div>
+
+
+<p id="result-wrapper">现在距离 2001年1月1日星期X HH:MM:SS 还有 X 天 X 小时 X 分 X 秒</p>
+
+<script type="text/javascript">
+  var year_select=document.getElementById("year-select");
+  var month_select=document.getElementById("month-select");
+  var day_select=document.getElementById("day-select");
+  var hour_select=document.getElementById("hour-select");
+  var minute_select=document.getElementById("minute-select");
+  var second_select=document.getElementById("second-select");
+  var result_wrapper=document.getElementById("result-wrapper")
+  var container=document.getElementById("container");
+
+
+  function build(item,start,end){
+    for(var i=start;i<=end;i++){
+      item.innerHTML+="<option value="+i+">"+i+"</option>";
+    }
+  }
+
+  function initial_build(){
+    build(year_select,2000,2032);
+    build(month_select,1,12);
+    build(day_select,1,31);
+    build(hour_select,0,23);
+    build(minute_select,0,59);
+    build(second_select,0,59);
+  }
+
+
+  function clear(item){
+    var length=item.options.length
+    for(var i=length;i>0;i--){
+      item.removeChild(item.childNodes[i]);
+    }
+
+  }
+
+  function get_time_now() {
+    var time=new Date();
+    var all={
+       y:time.getFullYear(),
+       month:time.getMonth()+1,
+       date:time.getDate(),
+       dCh:time.getDay(),
+       dEn:time.getDay(),
+       h:time.getHours(),
+       m:time.getMinutes(),
+       s:time.getSeconds(),
+    };
+    return all;
+  }
+
+  function get_time_input() {
+    var all={
+       y:parseInt(year_select.options[year_select.selectedIndex].value),
+       month:parseInt(month_select.options[month_select.selectedIndex].value),
+       date:parseInt(day_select.options[day_select.selectedIndex].value),
+       h:parseInt(hour_select.options[hour_select.selectedIndex].value),
+       m:parseInt(minute_select.options[minute_select.selectedIndex].value),
+       s:parseInt(second_select.options[second_select.selectedIndex].value),
+    };
+    return all;
+  }
+
+  function addZero(all){
+    if(all.h<10){
+      all.h="0"+all.h;
+    }
+    if(all.s<10){
+      all.s="0"+all.s;
+    }
+    if(all.m<10){
+      all.m="0"+all.m;
+    }
+    return all;
+  }
+
+  function get_difference(item){
+    var result=0;
+    for(var i=2000;i<item.y;i++){
+        if(i%4==0){
+          result+=366;
+        }else{
+          result+=365;
+      }
+    }
+    for(var i=1;i<item.month;i++){
+
+        if(i==4&&i==6&&i==9&&i==11){
+          result+=30;
+        }else if(i==2){
+          if(item.y%4==0){
+            result+=29;
+          }else{
+            result+=28;
+          }
+        }else{
+          result+=31;
+        }
+    }
+    result+=item.date;
+    result=result*86400+item.h*3600+item.m*60+item.s;
+      return result;
+  }
+
+  function re(now,input){
+    var r={
+      day:0,
+      hour:0,
+      minute:0,
+      second:0,
+      flag:1,
+    }
+    if(now-input<0){
+      r.flag=0;
+    }
+    var abs=Math.abs(now-input);
+    r.day=parseInt(abs/86400);
+    r.hour=parseInt((abs-r.day*86400)/3600);
+    r.minute=parseInt((abs-r.day*86400-r.hour*3600)/60);
+    r.second=abs-r.day*86400-r.hour*3600-r.minute*60;
+    return r;
+  }
+
+  function result_show(item){
+    result_wrapper.innerHTML="现在距离"+time_input.y+"年"+time_input.month+"月"+time_input.date+"日"+time_input.h+":"+time_input.m+":"+time_input.s;
+    if(item.flag==1){
+      result_wrapper.innerHTML+="已经过去"+item.day+"天"+item.hour+"小时"+item.minute+"分"+item.second+"秒";
+    }else{
+      result_wrapper.innerHTML+="还有"+item.day+"天"+item.hour+"小时"+item.minute+"分"+item.second+"秒";
+    }
+  }
+
+initial_build();
+var time_now=get_time_now();
+var now_difference=get_difference(time_now);
+var time_input;
+var input_difference;
+var show;
+
+//======================================================动态获取输入的时间差
+container.onclick=function(ev){
+  var target=ev.target;
+  if(target.id=="year-select"||target.id=="month-select"||target.id=="day-select"||target.id=="hour-select"||target.id=="minute-select"||target.id=="second-select"){
+      time_input=get_time_input();
+      input_difference=get_difference(time_input);
+      addZero(time_input);
+      show=re(now_difference,input_difference);
+      result_show(show);
+  }
+}
+
+month_select.onchange=function(){
+  var month_value=month_select.options[month_select.selectedIndex].value;
+  var year_value=year_select.options[year_select.selectedIndex].value;
+  if(month_value==4&&month_value==6&&month_value==9&&month_value==11){
+    clear(day_select);
+    build(day_select,1,30);
+  }else if(month_value==2){
+    if(year_value%4==0){
+      clear(day_select);
+      build(day_select,1,29);
+    }else{
+      clear(day_select);
+      build(day_select,1,28);
+    }
+  }else{
+    clear(day_select);
+    build(day_select,1,31);
+  }
+}
+
+</script>
+</body>
+</html>

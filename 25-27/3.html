@@ -175,7 +175,7 @@ var input_difference;
 var show;
 
 //======================================================动态获取输入的时间差
-container.onclick=function(ev){
+container.onchange=function(ev){
   var target=ev.target;
   if(target.id=="year-select"||target.id=="month-select"||target.id=="day-select"||target.id=="hour-select"||target.id=="minute-select"||target.id=="second-select"){
       time_input=get_time_input();
